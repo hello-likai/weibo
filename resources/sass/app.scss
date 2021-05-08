@@ -1,5 +1,5 @@
 
-// Bootstrap
+// 这是Sass语法，用来引入其他样式文件，目前只引入Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
 body {
@@ -31,4 +31,5 @@ footer {
       width: 17px;
       height: 17px;
     }
+
 }
