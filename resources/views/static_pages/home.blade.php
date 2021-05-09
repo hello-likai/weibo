@@ -10,6 +10,9 @@
       一切，将从这里开始。
     </p>
     <p>
+        {{-- 链接可以使用通常的 a href="/help" 方式，也可以使用 Lavarel中的路由 ，定义在routes/web.app里面
+            使用路由定义链接的好处是：只需要在路由中修改，所有引用的地方都被修改了
+        --}}
       <a class="btn btn-lg btn-success" href="{{ route('signup') }}" role="button">现在注册</a>
     </p>
   </div>

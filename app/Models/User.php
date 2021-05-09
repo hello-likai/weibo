@@ -47,6 +47,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    # 使用 Gravatar的 API来获取头像信息，根据的是Email
     public function gravatar($size = '100')
     {
         $hash = md5(strtolower(trim($this->attributes['email'])));

@@ -8,10 +8,12 @@
       <h5>注册</h5>
     </div>
     <div class="card-body">
-        <!-- 引入通用错误页面 -->
+
+        <!-- 引入通用错误页面，这样提交等操作，报错的时候，就会使用这个页面来展示错误信息 -->
         @include('shared._errors')
 
       <form method="POST" action="{{ route('users.store') }}">
+        {{-- Blade 模板为我们提供的 csrf_field 方法，功能相当于令牌token --}}
         {{ csrf_field() }}
 
         <div class="form-group">

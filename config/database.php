@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Str;
 
+# 这个函数在app/helpers.php中
 $db_config = get_db_config();
 
 return [
-
+    # 定义默认的数据库链接
    'default' => $db_config['connection'],
 
     'connections' => [
