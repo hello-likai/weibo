@@ -30,7 +30,7 @@ class RouteServiceProvider extends ServiceProvider
 
     /**
      * Define your route model bindings, pattern filters, etc.
-     *
+     * 全局范围的路由参数约束绑定，在这里设置，如果是单个文件的路由参数，直接在web.php里面，通过->where就可以
      * @return void
      */
     public function boot()
