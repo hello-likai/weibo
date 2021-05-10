@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 
 class UsersController extends Controller
@@ -41,6 +42,9 @@ class UsersController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
+
+        // 注册后自动登陆
+        Auth::login($user);
 
         # 鉴于 HTTP的无状态，Laravel 提供了一种用于临时保存用户数据的方法 - 会话（Session）
         # 存入一条缓存的数据，让它只在下一次的请求内有效时，则可以使用 flash 方法，键用来在 页面的循环中，根据它来取值
