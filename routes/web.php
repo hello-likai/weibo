@@ -3,7 +3,9 @@
 #use Illuminate\Routing\Route; 经过查证，应该使用下面这个
 use Illuminate\Support\Facades\Route;
 
-# 后面的name方法，是给路由起名字
+# get方法的第一个参数：访问路径，/help和help相同，
+# 第二个参数：处理URL的控制器动作，对应控制器里面的函数名
+# 后面的name方法，是给路由起名字，页面上可以根据这个名字来找到路由
 Route::get('/', 'StaticPagesController@home')->name('home');
 Route::any('/help', 'StaticPagesController@help')->name('help');
 Route::get('/about', 'StaticPagesController@about')->name('about');
@@ -14,6 +16,7 @@ Route::resource('users', 'UsersController');
 
 # 新增会话控制的路由
 Route::get('login', 'SessionsController@create')->name('login');
+# 用来登陆的认证
 Route::post('login', 'SessionsController@store')->name('login');
 Route::delete('logout', 'SessionsController@destroy')->name('logout');
 
