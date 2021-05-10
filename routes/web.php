@@ -12,6 +12,11 @@ Route::get('signup', 'UsersController@create')->name('signup');
 
 Route::resource('users', 'UsersController');
 
+# 新增会话控制的路由
+Route::get('login', 'SessionsController@create')->name('login');
+Route::post('login', 'SessionsController@store')->name('login');
+Route::delete('logout', 'SessionsController@destroy')->name('logout');
+
 
 # 路由器的另外一种配置方式，url后面还可以添加参数，这样在后面的闭包中，可以使用这个参数
 // Route::get('test', function(){
