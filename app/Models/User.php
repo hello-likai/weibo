@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 // Laravel 默认为我们生成了用户模型文件
 
@@ -38,11 +39,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
@@ -52,5 +48,16 @@ class User extends Authenticatable
     {
         $hash = md5(strtolower(trim($this->attributes['email'])));
         return "http://www.gravatar.com/avatar/$hash?s=$size";
+    }
+
+
+    public static function boot()
+    {
+        parent::boot();
+
+        // Eloquent 模型默认提供了多个事件，creating 用于监听模型被创建之前的事件
+        static::creating(function ($user){
+            $user->activation_token = Str::random(10);
+        });
     }
 }

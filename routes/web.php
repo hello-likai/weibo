@@ -20,6 +20,9 @@ Route::get('login', 'SessionsController@create')->name('login');
 Route::post('login', 'SessionsController@store')->name('login');
 Route::delete('logout', 'SessionsController@destroy')->name('logout');
 
+# 用来激活账户
+Route::get('signup/confirm/{token}', 'UsersController@confirmEmail')->name('confirm_email');
+
 
 # 路由器的另外一种配置方式，url后面还可以添加参数，这样在后面的闭包中，可以使用这个参数
 // Route::get('test', function(){

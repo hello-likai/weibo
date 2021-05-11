@@ -6,15 +6,19 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
+// 第九章内容上要使用 use Mail，但是一直报错，像这样引用就不会报错
+use Illuminate\Support\Facades\Mail;
+
 
 class UsersController extends Controller
 {
     // 对象创建之前就会调用构造器， 通过构造函数调用中间件方法，类似Java中的过滤器
     public function __construct()
     {
+        // auth是中间件的名字
         $this->middleware('auth', [
-            // except 方法来设定 指定动作 不使用 Auth 中间件进行过滤
-            'except' => ['show', 'create', 'store', 'index']
+            // 要进行过滤的动作：except 排除不需要授权认证的方法
+            'except' => ['show', 'create', 'store', 'index', 'confirmEmail']
         ]);
 
         // 只让未登录用户访问注册页面：
@@ -57,17 +61,26 @@ class UsersController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
+        $this->sendEmailConfirmationTo($user);
+        session()->flash('success', '验证邮件已发送到你的注册邮箱上，请注意查收。');
+        return redirect('/');
+
         // 注册后自动登陆
-        Auth::login($user);
+        // Auth::login($user);  第九章内容，注册之后发送激活邮件，而不是自动登陆了
 
         # 鉴于 HTTP的无状态，Laravel 提供了一种用于临时保存用户数据的方法 - 会话（Session）
         # 存入一条缓存的数据，让它只在下一次的请求内有效时，则可以使用 flash 方法，键用来在 页面的循环中，根据它来取值
         # @foreach (['danger', 'warning', 'success', 'info'] as $msg)
-        session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
-        return redirect()->route('users.show', [$user]);
+        // session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
+        // return redirect()->route('users.show', [$user]);
     }
 
-    # 打开用户信息页面
+    /**
+     * edit方法的隐藏逻辑：
+     *  1，利用了 Laravel 的『隐性路由模型绑定』功能，直接读取对应 ID 的用户实例 $user，未找到则报错；
+     *  2，将查找到的用户实例 $user 与编辑视图进行绑定
+     *      将用户数据与视图进行绑定之后，便可以在视图上通过 $user 来访问用户对象
+     */
     public function edit(User $user)
     {
         // 最开始忘记了这里，结果，使用id是1登陆的时候， weibo.test/users/2/edit任然可以访问
@@ -78,9 +91,10 @@ class UsersController extends Controller
     // update 第一个参数为 id 对应的用户实例对象，第二个则为更新用户表单的输入数据
     public function update(User $user, Request $request)
     {
-        // 添加授权策略之后，在这里就可以使用authorize()方法
+        // 注册添加授权策略之后，在这里就可以使用authorize()方法
         $this->authorize('update', $user);
 
+        // 对用户输入数据进行校验
         $this->validate($request, [
             'name' => 'required|max:50',
             'password' => 'nullable|confirmed|min:6'
@@ -88,6 +102,7 @@ class UsersController extends Controller
 
         $data = [];
         $data['name'] = $request->name;
+        // 用一个判断，避免更新空的密码到数据库里
         if ($request->password) {
             $data['password'] = bcrypt($request->password);
         }
@@ -116,5 +131,34 @@ class UsersController extends Controller
         $user->delete();
         session()->flash('success', '成功删除用户！');
         return back();
+    }
+
+    // 发送激活邮件
+    protected function sendEmailConfirmationTo($user)
+    {
+        $view = 'emails.confirm';
+        $data = compact('user');
+        $from = 'summer@example.com';
+        $name = 'Summer';
+        $to = $user->email;
+        $subject = "感谢注册 Weibo 应用！请确认你的邮箱。";
+
+        Mail::send($view, $data, function ($message) use ($from, $name, $to, $subject) {
+            $message->from($from, $name)->to($to)->subject($subject);
+        });
+    }
+
+    // 确认激活邮件
+    public function confirmEmail($token)
+    {
+        $user = User::where('activation_token', $token)->firstOrFail();
+
+        $user->activated = true; //已激活
+        $user->activation_token = null; //激活之后将令牌置空，防止重复激活
+        $user->save(); // 保存用户状态
+
+        Auth::login($user);
+        session()->flash('success', '恭喜你，激活成功！');
+        return redirect()->route('users.show', [$user]);
     }
 }

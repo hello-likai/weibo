@@ -42,11 +42,17 @@ class SessionsController extends Controller
         * Laravel 默认为用户生成的迁移文件中已包含 remember_token 字段，该字段将用于保存『记住我』令牌
         */
        if (Auth::attempt($credentials, $request->has('remember'))) {
-            session()->flash('success', '欢迎回来！');
-
-            $fallback = route('users.show', Auth::user());
-            return redirect()->intended($fallback); // 这里是为了保证，未登陆之前访问的页面，在登陆之后直接跳过去
-            // return redirect()->route('users.show', [Auth::user()]);
+            // 第九章，添加一个判断是否激活账户的校验
+            if(Auth::user()->activated){
+                session()->flash('success', '欢迎回来！');
+                $fallback = route('users.show', Auth::user());
+                // 这里是为了保证，未登陆之前访问的页面，在登陆之后直接跳过去
+                return redirect()->intended($fallback);
+            }else{
+                Auth::logout();
+                session()->flash('warning', '你的账号未激活，请检查邮箱中的注册邮件进行激活。');
+                return redirect('/');
+            }
         } else {
             session()->flash('danger', '很抱歉，您的邮箱和密码不匹配');
             return redirect()->back()->withInput();
