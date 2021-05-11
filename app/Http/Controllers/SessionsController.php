@@ -20,8 +20,17 @@ class SessionsController extends Controller
            'email' => 'required|email|max:255',
            'password' => 'required'
        ]);
-        // 增加了 $request->has('remember') 实现了登陆之后，记住我的功能
-        // Laravel 默认为用户生成的迁移文件中已包含 remember_token 字段，该字段将用于保存『记住我』令牌
+
+       /**
+        * attempt()方法的逻辑：
+        *    接收一个数组来作为第一个参数，该参数提供的值将用于寻找数据库中的用户数据；
+        *    第一个字段在数据库中查找，找到了再匹配第二个字段，
+        *    匹配后两个值完全一致，会创建一个『会话』给通过认证的用户。
+        *    会话在创建的同时，也会种下一个名为 laravel_session 的 HTTP Cookie，以此 Cookie 来记录用户登录状态，最终返回 true
+
+        * 增加了 $request->has('remember') 实现了登陆之后，记住我的功能
+        * Laravel 默认为用户生成的迁移文件中已包含 remember_token 字段，该字段将用于保存『记住我』令牌
+        */
        if (Auth::attempt($credentials, $request->has('remember'))) {
             session()->flash('success', '欢迎回来！');
             return redirect()->route('users.show', [Auth::user()]);
