@@ -23,6 +23,15 @@ Route::delete('logout', 'SessionsController@destroy')->name('logout');
 # 用来激活账户
 Route::get('signup/confirm/{token}', 'UsersController@confirmEmail')->name('confirm_email');
 
+// 忘记密码重置路由，填写 Email 的表单的路由
+Route::get('password/reset',  'PasswordController@showLinkRequestForm')->name('password.request');
+// 处理表单提交，成功的话就发送邮件，附带 Token 的链接
+Route::post('password/email',  'PasswordController@sendResetLinkEmail')->name('password.email');
+// 显示更新密码的表单，包含 token
+Route::get('password/reset/{token}',  'PasswordController@showResetForm')->name('password.reset');
+// 对提交过来的 token 和 email 数据进行配对，正确的话更新密码
+Route::post('password/reset',  'PasswordController@reset')->name('password.update');
+
 
 # 路由器的另外一种配置方式，url后面还可以添加参数，这样在后面的闭包中，可以使用这个参数
 // Route::get('test', function(){
