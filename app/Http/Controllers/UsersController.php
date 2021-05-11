@@ -106,4 +106,15 @@ class UsersController extends Controller
         $users = User::paginate(6);
         return view('users.index', compact('users'));
     }
+
+    // 删除用户
+    public function destroy(User $user)
+    {
+        // 使用 authorize 方法来对删除操作进行授权验证即可。在删除动作的授权中，我们规定只有当前用户为管理员
+        $this->authorize('destroy', $user);
+        // Eloquent 模型提供的 delete 方法对用户资源进行删除
+        $user->delete();
+        session()->flash('success', '成功删除用户！');
+        return back();
+    }
 }

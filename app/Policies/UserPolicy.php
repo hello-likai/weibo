@@ -14,4 +14,10 @@ class UserPolicy
     {
         return $currentUser->id === $user->id;
     }
+
+    public function destroy(User $currentUser, User $user)
+    {
+        // 只有当前用户拥有管理员权限且删除的用户不是自己时才显示链接
+        return $currentUser->is_admin && $currentUser->id !== $user->id;
+    }
 }
