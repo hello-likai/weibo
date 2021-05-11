@@ -14,7 +14,7 @@ class UsersController extends Controller
     {
         $this->middleware('auth', [
             // except 方法来设定 指定动作 不使用 Auth 中间件进行过滤
-            'except' => ['show', 'create', 'store']
+            'except' => ['show', 'create', 'store', 'index']
         ]);
 
         // 只让未登录用户访问注册页面：
@@ -97,5 +97,13 @@ class UsersController extends Controller
         session()->flash('success', '个人资料更新成功！');
 
         return redirect()->route('users.show', $user);
+    }
+
+    // 列出所有用户，这个是不需要授权的，因此在上面的构造函数中，添加了排除
+    public function index()
+    {
+        // 这里使用Eloquent 用户模型将所有用户的数据一下子完全取出来了，后面需要优化，否则影响性能
+        $users = User::paginate(6);
+        return view('users.index', compact('users'));
     }
 }
