@@ -9,6 +9,20 @@ use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
+    // 对象创建之前就会调用构造器， 通过构造函数调用中间件方法，类似Java中的过滤器
+    public function __construct()
+    {
+        $this->middleware('auth', [
+            // except 方法来设定 指定动作 不使用 Auth 中间件进行过滤
+            'except' => ['show', 'create', 'store']
+        ]);
+
+        // 只让未登录用户访问注册页面：
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
+    }
+
     public function create()
     {
         return view('users.create');
@@ -56,12 +70,17 @@ class UsersController extends Controller
     # 打开用户信息页面
     public function edit(User $user)
     {
+        // 最开始忘记了这里，结果，使用id是1登陆的时候， weibo.test/users/2/edit任然可以访问
+        $this->authorize('update', $user);
         return view('users.edit', compact('user'));
     }
 
     // update 第一个参数为 id 对应的用户实例对象，第二个则为更新用户表单的输入数据
     public function update(User $user, Request $request)
     {
+        // 添加授权策略之后，在这里就可以使用authorize()方法
+        $this->authorize('update', $user);
+
         $this->validate($request, [
             'name' => 'required|max:50',
             'password' => 'nullable|confirmed|min:6'
