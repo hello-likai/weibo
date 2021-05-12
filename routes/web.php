@@ -32,6 +32,9 @@ Route::get('password/reset/{token}',  'PasswordController@showResetForm')->name(
 // 对提交过来的 token 和 email 数据进行配对，正确的话更新密码
 Route::post('password/reset',  'PasswordController@reset')->name('password.update');
 
+// 微博发布删除功能路由
+Route::resource('statuses', 'StatusesController', ['only' => ['store', 'destroy']]);
+
 
 # 路由器的另外一种配置方式，url后面还可以添加参数，这样在后面的闭包中，可以使用这个参数
 // Route::get('test', function(){
