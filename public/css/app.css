@@ -10018,6 +10018,7 @@ footer {
   font-size: 13px;
   font-weight: bold;
   /* User gravatar */
+  /* 用户编辑的样式 */
 }
 footer a {
   color: #555;
@@ -10048,4 +10049,38 @@ footer .gravatar {
   float: left;
   max-width: 50px;
   border-radius: 50%;
+}
+footer .gravatar_edit {
+  margin: 15px auto;
+  text-align: center;
+}
+footer .gravatar_edit .gravatar {
+  float: none;
+  max-width: 100px;
+}
+footer .stats {
+  overflow: auto;
+  margin-top: 0;
+  padding: 0;
+}
+footer .stats a {
+  float: left;
+  padding: 0 10px;
+  text-align: center;
+  width: 33%;
+  border-left: 1px solid #eee;
+  color: #33383c;
+}
+footer .stats a:first-child {
+  padding-left: 0;
+  border: 0;
+}
+footer .stats a:hover {
+  text-decoration: none;
+  color: #337ab7;
+}
+footer .stats strong {
+  display: block;
+  font-size: 1.2em;
+  color: black;
 }
