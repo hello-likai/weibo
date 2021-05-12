@@ -35,6 +35,10 @@ Route::post('password/reset',  'PasswordController@reset')->name('password.updat
 // 微博发布删除功能路由
 Route::resource('statuses', 'StatusesController', ['only' => ['store', 'destroy']]);
 
+// 注人列表和粉丝列表路由
+Route::get('/users/{user}/followings', 'UsersController@followings')->name('users.followings');
+Route::get('/users/{user}/followers', 'UsersController@followers')->name('users.followers');
+
 
 # 路由器的另外一种配置方式，url后面还可以添加参数，这样在后面的闭包中，可以使用这个参数
 // Route::get('test', function(){
