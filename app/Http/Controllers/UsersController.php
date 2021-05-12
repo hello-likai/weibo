@@ -34,11 +34,15 @@ class UsersController extends Controller
 
     public function show(User $user)
     {
+        // 第十章，现在添加展示个人微博的功能，同时在return中，将微博动态数据也打包进去
+        $statuses = $user->statuses()
+                         ->orderBy('created_at', 'desc')
+                         ->paginate(10);
         /**
          * compact里面的user，就是上面的参数$user，这个函数的作用是将它的参数，生成一个关联数组；
          * view() 方法将模型数据与视图绑定，这样在 用户页面中，就可以使用 {{ $user->name }} 这种方式来取值了
          */
-        return view('users.show', compact('user'));
+        return view('users.show', compact('user', 'statuses'));
     }
 
     // 注册数据验证 $request实例包含了用户注册提交的信息
