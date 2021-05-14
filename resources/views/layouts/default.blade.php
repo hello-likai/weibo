@@ -7,7 +7,9 @@
 
     <!-- 导入bootstrap后，通过命令npm run watch-poll编译的css文件 Laravel 在运行时，
         是以 public 文件夹为根目录的，因此可以直接使用css/app.css这种相对路径-->
-    <link rel="stylesheet" href="{{ mix('css/app.css') }}"> <!-- {{ mix('css/app.css') }}用来动态加载样式代码 -->
+    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+    {{-- mix() 方法与 webpack.mix.js 文件里的逻辑遥相呼应，用来避免因为缓存，导致修改样式之后不生效 --}}
+
   </head>
 
   <body>

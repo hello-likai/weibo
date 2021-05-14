@@ -16,7 +16,7 @@ Route::resource('users', 'UsersController');
 
 # 新增会话控制的路由
 Route::get('login', 'SessionsController@create')->name('login');
-# 用来登陆的认证
+# 用来登陆的认证，  使用post方式，可以避免两个login的混淆，上面是get方式
 Route::post('login', 'SessionsController@store')->name('login');
 Route::delete('logout', 'SessionsController@destroy')->name('logout');
 
@@ -27,7 +27,7 @@ Route::get('signup/confirm/{token}', 'UsersController@confirmEmail')->name('conf
 Route::get('password/reset',  'PasswordController@showLinkRequestForm')->name('password.request');
 // 处理表单提交，成功的话就发送邮件，附带 Token 的链接
 Route::post('password/email',  'PasswordController@sendResetLinkEmail')->name('password.email');
-// 显示更新密码的表单，包含 token
+// 显示更新密码的表单，包含 token，，这是通过邮箱里的连接点击跳转过来的页面
 Route::get('password/reset/{token}',  'PasswordController@showResetForm')->name('password.reset');
 // 对提交过来的 token 和 email 数据进行配对，正确的话更新密码
 Route::post('password/reset',  'PasswordController@reset')->name('password.update');

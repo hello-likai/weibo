@@ -27,11 +27,20 @@ class UsersController extends Controller
         ]);
     }
 
+    // 创建用户的页面
     public function create()
     {
         return view('users.create');
     }
 
+
+    /**
+     * show() 方法传参时声明了类型 —— Eloquent 模型 User，对应的变量名 $user 会匹配路由片段中的 {user}，
+     *      Route::get('/users/{user}', 'UsersController@show')->name('users.show');
+     * 这样，Laravel 会自动注入与请求 URI 中传入的 ID 对应的用户模型实例。
+     * 【隐形路由模型绑定】
+     */
+    // 显示用户个人信息的页面
     public function show(User $user)
     {
         // 第十章，现在添加展示个人微博的功能，同时在return中，将微博动态数据也打包进去
@@ -39,13 +48,15 @@ class UsersController extends Controller
                          ->orderBy('created_at', 'desc')
                          ->paginate(10);
         /**
-         * compact里面的user，就是上面的参数$user，这个函数的作用是将它的参数，生成一个关联数组；
+         * compact里面的user，就是Laravel 会自动注入与请求 URI 中传入的 ID 对应的用户模型实例，
+         *  它的作用：将它的参数，生成一个关联数组；
          * view() 方法将模型数据与视图绑定，这样在 用户页面中，就可以使用 {{ $user->name }} 这种方式来取值了
          */
         return view('users.show', compact('user', 'statuses'));
     }
 
-    // 注册数据验证 $request实例包含了用户注册提交的信息
+
+    // 创建用户， $request实例包含了用户注册提交的信息
     public function store(Request $request)
     {
         /**
@@ -59,21 +70,24 @@ class UsersController extends Controller
             'password' => 'required|confirmed|min:6'
         ]);
 
+        // 直接和数据库交互，注册数据入库，这些应该是内置方法，后面还有个User::all()
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
-
+        // 发送激活邮件
         $this->sendEmailConfirmationTo($user);
+        // 在网页顶部位置显示注册成功的提示信息
         session()->flash('success', '验证邮件已发送到你的注册邮箱上，请注意查收。');
         return redirect('/');
 
         // 注册后自动登陆
-        // Auth::login($user);  第九章内容，注册之后发送激活邮件，而不是自动登陆了
+        // Auth::login($user);
+        // 第九章内容，注册之后发送激活邮件，而不是自动登陆了，因此注释这块代码
 
         # 鉴于 HTTP的无状态，Laravel 提供了一种用于临时保存用户数据的方法 - 会话（Session）
-        # 存入一条缓存的数据，让它只在下一次的请求内有效时，则可以使用 flash 方法，键用来在 页面的循环中，根据它来取值
+        # 存入一条缓存的数据，【让它只在下一次的请求内有效时，则可以使用 flash 方法】，键用来在 页面的循环中，根据它来取值
         # @foreach (['danger', 'warning', 'success', 'info'] as $msg)
         // session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
         // return redirect()->route('users.show', [$user]);
@@ -85,14 +99,19 @@ class UsersController extends Controller
      *  2，将查找到的用户实例 $user 与编辑视图进行绑定
      *      将用户数据与视图进行绑定之后，便可以在视图上通过 $user 来访问用户对象
      */
+    // 编辑用户个人资料的页面
     public function edit(User $user)
     {
         // 最开始忘记了这里，结果，使用id是1登陆的时候， weibo.test/users/2/edit任然可以访问
         $this->authorize('update', $user);
+        // authorize()方法，第一个参数是：授权策略的名称，在app\Policies\UserPolicy.php中，update里面定义了授权的逻辑
+        //                  第二个参数是：授权验证的数据，对应update方法的第二个参数，它的第一个参数，框架会自动加载当前登录用户
+
+
         return view('users.edit', compact('user'));
     }
 
-    // update 第一个参数为 id 对应的用户实例对象，第二个则为更新用户表单的输入数据
+    // update：更新用户       第一个参数为 id 对应的用户实例对象，第二个则为更新用户表单的输入数据
     public function update(User $user, Request $request)
     {
         // 注册添加授权策略之后，在这里就可以使用authorize()方法
@@ -118,7 +137,7 @@ class UsersController extends Controller
         return redirect()->route('users.show', $user);
     }
 
-    // 列出所有用户，这个是不需要授权的，因此在上面的构造函数中，添加了排除
+    // 显示所有用户列表的页面，     这个是不需要授权的，因此在上面的构造函数中，添加了排除
     public function index()
     {
         // 这里使用Eloquent 用户模型将所有用户的数据一下子完全取出来了，后面需要优化，否则影响性能
@@ -161,17 +180,21 @@ class UsersController extends Controller
         });
     }
 
-    // 确认激活邮件
+    // 确认激活邮件，处理逻辑是，根据给定的参数去数据库查找，然后更新对应的字段数据，再保存
     public function confirmEmail($token)
     {
+        // where方法两个参数：第一个是实体类的字段，第二个是它的值，根据这两个参数去数据库获取数据
         $user = User::where('activation_token', $token)->firstOrFail();
 
         $user->activated = true; //已激活
         $user->activation_token = null; //激活之后将令牌置空，防止重复激活
         $user->save(); // 保存用户状态
 
+        // 保存之后，登陆
         Auth::login($user);
+        // 返回提示信息
         session()->flash('success', '恭喜你，激活成功！');
+        // 跳转视图
         return redirect()->route('users.show', [$user]);
     }
 
@@ -183,6 +206,7 @@ class UsersController extends Controller
         return view('users.show_follow', compact('users', 'title'));
     }
 
+    // 获取关注人/粉丝
     public function followers(User $user)
     {
         $users = $user->followers()->paginate(30);

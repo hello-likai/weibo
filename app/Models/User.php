@@ -56,6 +56,7 @@ class User extends Authenticatable
         parent::boot();
 
         // Eloquent 模型默认提供了多个事件，creating 用于监听模型被创建之前的事件
+        // creating事件后添加，当这个事件发生时，触发的闭包函数，闭包的参数就是监听对象的实例
         static::creating(function ($user){
             $user->activation_token = Str::random(10);
         });

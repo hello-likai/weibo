@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Str;
 
-# 这个函数在app/helpers.php中
+# 这个函数在app/helpers.php中，这个文件是后来定义的
 $db_config = get_db_config();
 
 return [

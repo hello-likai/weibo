@@ -12,6 +12,7 @@
       @include('shared._errors')
 
       <form method="POST" action="{{ route('users.store') }}">
+        {{-- 指向 web 路由文件中定义的 POST、PUT 或 DELETE 路由的任何 HTML 表单都应该包含一个 CSRF 令牌字段，否则，这个请求将会被拒绝 --}}
         {{ csrf_field() }}
 
         <div class="form-group">

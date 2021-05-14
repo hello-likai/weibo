@@ -11,7 +11,7 @@ class SessionsController extends Controller
     // 登陆和注册页面，只允许未登陆用户访问
     public function __construct()
     {
-        // 通过中间件，只让未登录用户访问登录页面：
+        // 通过中间件，只让未登录用户访问登录页面：guest和update 都是中间件
         $this->middleware('guest', [
             'only' => ['create']
         ]);
@@ -23,7 +23,7 @@ class SessionsController extends Controller
         return view('sessions.create');
     }
 
-    // 创建 store 动作来对用户提交的数据进行验证
+    // 实现登陆认证功能
     public function store(Request $request)
     {
        $credentials = $this->validate($request, [
@@ -32,7 +32,7 @@ class SessionsController extends Controller
        ]);
 
        /**
-        * attempt()方法的逻辑：
+        * attempt()方法用来实现用户身份认证的逻辑：
         *    接收一个数组来作为第一个参数，该参数提供的值将用于寻找数据库中的用户数据；
         *    第一个字段在数据库中查找，找到了再匹配第二个字段，
         *    匹配后两个值完全一致，会创建一个『会话』给通过认证的用户。
@@ -45,9 +45,11 @@ class SessionsController extends Controller
             // 第九章，添加一个判断是否激活账户的校验
             if(Auth::user()->activated){
                 session()->flash('success', '欢迎回来！');
+                // Auth::user() 方法来获取 当前登录用户 的信息，
                 $fallback = route('users.show', Auth::user());
                 // 这里是为了保证，未登陆之前访问的页面，在登陆之后直接跳过去
                 return redirect()->intended($fallback);
+                // intended($fallback)方法，将页面重定向到上一次请求尝试访问的页面上，并接收一个默认跳转地址参数，当上一次请求记录为空时，跳转到默认地址上
             }else{
                 Auth::logout();
                 session()->flash('warning', '你的账号未激活，请检查邮箱中的注册邮件进行激活。');

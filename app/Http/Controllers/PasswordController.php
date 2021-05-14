@@ -81,14 +81,14 @@ class PasswordController extends Controller
         return redirect()->back();
     }
 
-
+    // 返回重置密码的视图
     public function showResetForm(Request $request)
     {
         $token = $request->route()->parameter('token');
         return view('auth.passwords.reset', compact('token'));
     }
 
-    // 重置密码
+    // 重置密码视图，点击提交，通过路由找到这里，进行重置密码
     public function reset(Request $request)
     {
         // 1. 验证数据是否合规

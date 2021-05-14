@@ -30,6 +30,8 @@
         一切，将从这里开始。
       </p>
       <p>
+          {{-- route() 方法由 Laravel 提供，通过传递一个具体的【路由名称】来生成完整的 URL，路由名称在路由中，使用name()方法来指定 --}}
+          {{-- Route::get('/', 'StaticPagesController@home')->name('home'); --}}
         <a class="btn btn-lg btn-success" href="{{ route('signup') }}" role="button">现在注册</a>
       </p>
     </div>
