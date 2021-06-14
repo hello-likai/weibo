@@ -11,7 +11,9 @@ class StaticPagesController extends Controller
     public function home()
     {
         $feed_items = [];
+        // 确认用户已登陆才能获取微博列表
         if (Auth::check()) {
+            // 获取微博列表，放入到数据，因为视图需要的数据是数组
             $feed_items = Auth::user()->feed()->paginate(30);
         }
 

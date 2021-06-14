@@ -40,7 +40,7 @@ class UsersController extends Controller
      * 这样，Laravel 会自动注入与请求 URI 中传入的 ID 对应的用户模型实例。
      * 【隐形路由模型绑定】
      */
-    // 显示用户个人信息的页面
+    // 显示用户个人信息的页面，添加展示个人微博信息
     public function show(User $user)
     {
         // 第十章，现在添加展示个人微博的功能，同时在return中，将微博动态数据也打包进去
@@ -61,6 +61,7 @@ class UsersController extends Controller
     {
         /**
          * validator 由 App\Http\Controllers\Controller 类中的 ValidatesRequests 进行定义
+         *      这个方法的返回值就是它的参数组成的数组，在会话控制器中，它就返回的是一个数组
          * 'required|unique:users|max:50'  这是多种验证规则
          * 'email' => 'required|email|unique:users|max:255', 验证规则里面的Email 相当于正则表达式 验证邮箱是否合法
          */
@@ -111,10 +112,10 @@ class UsersController extends Controller
         return view('users.edit', compact('user'));
     }
 
-    // update：更新用户       第一个参数为 id 对应的用户实例对象，第二个则为更新用户表单的输入数据
+    // update：更新用户    第一个参数为 Laravel框架根据id自动获取的用户实例，第二个用户表单的输入数据
     public function update(User $user, Request $request)
     {
-        // 注册添加授权策略之后，在这里就可以使用authorize()方法
+        // 使用>authorize来授权update方法，当前用户只能更新它自己
         $this->authorize('update', $user);
 
         // 对用户输入数据进行校验
@@ -148,7 +149,7 @@ class UsersController extends Controller
     // 删除用户
     public function destroy(User $user)
     {
-        // 使用 authorize 方法来对删除操作进行授权验证即可。在删除动作的授权中，我们规定只有当前用户为管理员
+        // 使用 authorize 方法来授权，通过授权才能继续进行
         $this->authorize('destroy', $user);
         // Eloquent 模型提供的 delete 方法对用户资源进行删除
         $user->delete();

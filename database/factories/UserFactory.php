@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
+// 模型工厂，Faker 和 Eloquent 模型工厂来为指定模型的每个字段设置随机值
+// 默认的 UserFactory 符合我们的要求，不需要做修改
 class UserFactory extends Factory
 {
     /**
@@ -16,7 +18,8 @@ class UserFactory extends Factory
     protected $model = User::class;
 
     /**
-     * Define the model's default state.
+     * 定义模型中，每个字段的值，最后作为一个数组返回
+     * $this->faker 是 PHP 函数库的实例，让我们可以在函数内部使用 Faker 方法来生成假数据并为模型的指定字段赋值。
      *
      * @return array
      */

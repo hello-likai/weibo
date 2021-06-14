@@ -12,7 +12,7 @@ use Carbon\Carbon;
 
 class PasswordController extends Controller
 {
-    // 在构造函数里，使用限流
+    // 在构造函数里，使用限流中间件
     public function __construct()
     {
         $this->middleware('throttle:2,1', [
@@ -20,7 +20,7 @@ class PasswordController extends Controller
             'only' => ['showLinkRequestForm']
         ]);
 
-        // 限流发送邮件次数
+        // 限流发送邮件次数：10分钟只能发3次邮件
         $this->middleware('throttle:3,10', [
             'only' => ['sendResetLinkEmail']
         ]);

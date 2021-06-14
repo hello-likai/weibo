@@ -13,7 +13,9 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
+        // 创建数据库表
         Schema::create('users', function (Blueprint $table) {
+            // 定义字段以及字段类型
             $table->id();  // bigIncrements() 的封装，此方法创建了一个 bigint unsigned 类型的自增长 id。
             $table->string('name');
             $table->string('email')->unique();

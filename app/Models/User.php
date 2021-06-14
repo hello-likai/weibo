@@ -3,18 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory; //模型工厂相关功能的引用
+use Illuminate\Foundation\Auth\User as Authenticatable; //是授权相关功能的引用。
+use Illuminate\Notifications\Notifiable; //消息通知相关功能引用
 use Illuminate\Support\Str;
 
 // Laravel 默认为我们生成了用户模型文件
 
 class User extends Authenticatable
 {
-    // Notifiable:消息通知相关功能引用
-    // HasFactory:模型工厂相关功能的引用
-    // Authenticatable 是授权相关功能的引用。
     use HasFactory, Notifiable;
 
     /**

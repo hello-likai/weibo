@@ -12,7 +12,7 @@ class StatusPolicy
 {
     use HandlesAuthorization;
 
-    // 为删除方法授权
+    // 为删除微博方法授权
     public function destroy(User $user, Status $status)
     {
         return $user->id === $status->user_id;

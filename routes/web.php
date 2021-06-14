@@ -20,7 +20,7 @@ Route::get('login', 'SessionsController@create')->name('login');
 Route::post('login', 'SessionsController@store')->name('login');
 Route::delete('logout', 'SessionsController@destroy')->name('logout');
 
-# 用来激活账户
+# 注册成功，发送激活邮件，在邮件中点击链接，携带激活令牌来激活账户
 Route::get('signup/confirm/{token}', 'UsersController@confirmEmail')->name('confirm_email');
 
 // 忘记密码重置路由，填写 Email 的表单的路由
